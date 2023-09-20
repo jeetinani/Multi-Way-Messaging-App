@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<head>
+    <title>
+    </title>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="./socket.io/socket.io.js"></script>
+</head>
+<body> 
+    <div class="container jumbotron">
+        <form> 
+        <div className="mb-3">
+            <label htmlfor="exampleFormControlInput1" className="form-label">Name</label><br>
+            <input type="text" className="form-control" id="name"/>
+        </div>
+        <div className="mb-3">
+            <label htmlfor="exampleFormControlTextarea1" className="form-label">Message</label><br>
+            <textarea className="form-control" id="message" rows="2"></textarea>
+        </div>
+        <button type="button" class="btn btn-success" id="send">Send</button>
+        </form>
+    </div>
+        <!-- <input id="name" placeholder="Name" /><br><br>
+        <textarea id="message" placeholder="Message"></textarea>
+        <br><br>
+        <button id="send">Send</button> -->
+    <div id="messages">
+    </div>
+    <script>
+        function showMessage(message) {
+            $("#messages").append(//`<h4>${message.name}</h4> <p>${message.message}</p>`);
+            `<div class="card" id="${message.id}">
+                <div class="card-header">
+                    ${message.name}
+                    <button type="button" align="right" class="btn btn-success" id="delete" onClick="deleteMessage(${message.id})">Delete</button>
+                </div>
+                <div class="card-body">
+                    <blockquote class="blockquote mb-0">
+                    <p>${message.message}</p>
+                    </blockquote>
+                </div>
+            </div>`
+            );
+        };
+
+        function deleteMessage(id){
+            console.log("deleting message " + id);
+            $.ajax({
+                url: "http://localhost:3000/messages",
+                type: 'DELETE',
+                dataType: 'json',
+                data: {'messageId':id},
+                success: function(result) {
+                console.log(result);
+                }
+            });
+            $(`#`+id).empty();
+        }
+
+        function addMessage(message){
+            console.log("adding message "+JSON.stringify(message));
+            $.post("http://localhost:3000/messages",message,(body)=>{
+                console.log(body);
+            }).then(()=>{
+                return hasBadWord(message);
+            })
+            .then((hasBadWord)=>{
+                if(hasBadWord){
+                    console.log("message has badword, removing it");
+                    deleteLastMessage();
+                }
+            });
+        };
+
+        /* function deleteLastMessage(){
+            console.log("deleting last message");
+            $.ajax({
+                url: "http://localhost:3000/messages",
+                type: 'DELETE',
+                dataType: 'json',
+                data: {'index':-1},
+                success: function(result) {
+                console.log(result);
+                }
+            });
+        }; */
+
+
+        function hasBadWord(message){
+            return message.message===('badword');
+            //return false;
+        }
+
+        function getMessages(){
+            $("#messages").empty();
+            $.get("http://localhost:3000/messages",(data)=>{
+                messageId = data.length + 1;
+                data.forEach(showMessage);
+            })
+        }
+
+        var socket = new io();
+        socket.on('message',showMessage);
+        socket.on('getAllMessages',getMessages);
+        socket.on('deleteMessage',removeMessage)
+
+        function removeMessage(messageId){
+            $(`#`+messageId).empty();
+        }
+
+        var messageId = 1;
+        $(() => {
+            $("#send").click(() => {
+                var message = {
+                    name: $("#name").val(),
+                    message: $("#message").val(),
+                    id: messageId
+                };
+                if(hasBadWord(message)){
+                    alert("message has badword, remove it");
+                }else {
+                    console.log("message sent is " + JSON.stringify(message));
+                    messageId = messageId + 1
+                    addMessage(message);
+                }
+                //showMessage(message);
+            });
+            getMessages();
+        });
+    </script>
+</body>
+
+</html>
