@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({extended:false}));
 //app.use(express.json());
 //app.use(express.urlencoded({extended:false}))
 
-var messages=[{id:1,name:"Base",message:"base"}];
+var messages=[/* {id:1,name:"Base",message:"base"} */];
 io.on('connection',(socket)=>{
     console.log("connected on io");
 });
@@ -22,7 +22,7 @@ app.post("/messages", (req,res)=>{
     console.log(req.body);
     messages.push(req.body);
     io.emit('message',req.body);
-    res.status(200);
+    res.status(201);
     res.send("added");
 });
 
@@ -43,19 +43,19 @@ app.get("/messages",(req,res)=>{
     res.send(messages);
 });
 
-app.get("/next",(req,res,next)=>{
+/* app.get("/next",(req,res,next)=>{
     console.log("entered /next");
     next();
 },(req,resp)=>{
     resp.send("from next");
 }
-);
+); */
 
-app.get("/redirect",(req,res)=>{
+/* app.get("/redirect",(req,res)=>{
     console.log("entering redirect");
     //res.status(200);
     res.redirect('https://www.google.co.in');
-});
+}); */
 
 app.get("/error",(req,res)=>{
     //console.log("entering get/messages");
@@ -70,7 +70,7 @@ app.use((err,req,resp,next)=>{
     resp.status(500).send("Something wrong");
 })
 
-app.route("/routeChaining")
+/* app.route("/routeChaining")
     .get((req,resp)=>{
         resp.send("from get/routeChaining");
     })
@@ -79,7 +79,7 @@ app.route("/routeChaining")
     })
     .put((req,resp)=>{
         resp.send("from put/routeChaining");
-    });
+    }); */
 
 app.get("/messages/:name",(req,res)=>{
     console.log("entering get/messages/user");
@@ -99,3 +99,5 @@ app.get("/messages/:name",(req,res)=>{
 var server = http.listen(3000,()=>{
     console.log("listening now on port "+server.address().port);
 });
+
+module.exports = app;
