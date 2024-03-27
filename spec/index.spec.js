@@ -7,13 +7,6 @@ const dummyMessage = {
     id: 1
 }
 
-describe('calc', () => {
-    it('should be double', () => {
-        expect(2 * 2).toBe(4);
-    })
-})
-
-
 describe('Application', () => {
     it('should take message', (done) => {
          request(app).post("/messages").send(dummyMessage).expect(201)
