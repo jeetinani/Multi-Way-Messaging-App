@@ -4,7 +4,7 @@
   "description": "Simple Multi Way Messaging App",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon nodejs",
+    "start": "nodemon MultiWayMessagingApp",
     "test": "jasmine"
   },
   "author": "jeetinani",
