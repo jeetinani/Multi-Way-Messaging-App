@@ -8,12 +8,25 @@ const dummyMessage = {
 }
 
 describe('Application', () => {
+    it('should have no messages at start', (done) => {
+        request(app).get("/messages")
+            .expect(200)
+            .end((err, res) => {
+                if (err) return done(err);
+                expect(res.body.length).toBe(0);
+                expect(app.messages.length).toBe(0);
+                done();
+            });
+   });
     it('should take message', (done) => {
+        var initLength = app.messages.length;
          request(app).post("/messages").send(dummyMessage).expect(201)
             .end((err, res) => {
                 if (err) return done(err);
                 //console.log(JSON.stringify(res))
                 expect(res.text).toBe("added");
+                expect(app.messages.length).toBe(initLength+1);
+                expect(app.messages.findIndex((message=>message.id==dummyMessage.id))).not.toBe(-1);
                 done();
             });
     });
@@ -27,7 +40,7 @@ describe('Application', () => {
             });
     });
     it("should return message by name", (done)=>{
-        request(app).get("/messages/"+dummyMessage.name)
+        request(app).get(`/messages/${dummyMessage.name}`)
         .expect(200)
         .end((err,res)=>{
             if(err) return done(err);
@@ -36,6 +49,7 @@ describe('Application', () => {
         });
     });
     it("should delete message", (done)=>{
+        var initLength = app.messages.length;
         request(app).delete("/messages").send({'messageId': dummyMessage.id})
         .expect(200)
         .end((err,res)=>{
@@ -46,6 +60,7 @@ describe('Application', () => {
             .end((err, res) => {
                 if (err) return done(err);
                 expect(res.body.length).toBe(0);
+                expect(app.messages.length).toBe(initLength-1);
             });
             done();
         });

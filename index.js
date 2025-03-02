@@ -27,10 +27,12 @@ app.post("/messages", (req,res)=>{
 });
 
 app.delete("/messages",(req,res)=>{
-    console.log("entering delete messages");
+    console.log("entering delete messages with req");
     console.log(req.body);
     //messages.splice(req.body.index-1,1);
-    messages = messages.filter(message=>message.id!=req.body.messageId);
+    //messages = messages.filter(message=>message.id!=req.body.messageId);
+    let removed = messages.splice(messages.findIndex(message=>message.id==req.body.messageId),1)[0];
+    console.log(`removed this - ${JSON.stringify(removed)}`);
     //io.emit('getAllMessages');
     io.emit('deleteMessage',req.body.messageId);
     res.status(200);
@@ -100,4 +102,5 @@ var server = http.listen(3000,()=>{
     console.log("listening now on port "+server.address().port);
 });
 
+app.messages=messages;
 module.exports = app;

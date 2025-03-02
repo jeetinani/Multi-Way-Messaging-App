@@ -1,5 +1,5 @@
 {
-  "name": "nodejs",
+  "name": "MultiWayMessagingApp",
   "version": "1.0.0",
   "description": "Simple Multi Way Messaging App",
   "main": "index.js",
