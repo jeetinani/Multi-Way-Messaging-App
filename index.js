@@ -102,5 +102,5 @@ var server = http.listen(3000,()=>{
     console.log("listening now on port "+server.address().port);
 });
 
-app.messages=messages;
-module.exports = app;
+//app.messages=messages;
+module.exports = [app,messages];

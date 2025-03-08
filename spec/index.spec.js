@@ -1,5 +1,5 @@
 var request = require("supertest");
-const app = require('../index');
+const [app,messages] = require('../index');
 
 const dummyMessage = {
     name: "Sample Name",
@@ -14,19 +14,19 @@ describe('Application', () => {
             .end((err, res) => {
                 if (err) return done(err);
                 expect(res.body.length).toBe(0);
-                expect(app.messages.length).toBe(0);
+                expect(messages.length).toBe(0);
                 done();
             });
    });
     it('should take message', (done) => {
-        var initLength = app.messages.length;
+        var initLength = messages.length;
          request(app).post("/messages").send(dummyMessage).expect(201)
             .end((err, res) => {
                 if (err) return done(err);
                 //console.log(JSON.stringify(res))
                 expect(res.text).toBe("added");
-                expect(app.messages.length).toBe(initLength+1);
-                expect(app.messages.findIndex((message=>message.id==dummyMessage.id))).not.toBe(-1);
+                expect(messages.length).toBe(initLength+1);
+                expect(messages.findIndex((message=>message.id==dummyMessage.id))).not.toBe(-1);
                 done();
             });
     });
@@ -49,7 +49,7 @@ describe('Application', () => {
         });
     });
     it("should delete message", (done)=>{
-        var initLength = app.messages.length;
+        var initLength = messages.length;
         request(app).delete("/messages").send({'messageId': dummyMessage.id})
         .expect(200)
         .end((err,res)=>{
@@ -60,7 +60,7 @@ describe('Application', () => {
             .end((err, res) => {
                 if (err) return done(err);
                 expect(res.body.length).toBe(0);
-                expect(app.messages.length).toBe(initLength-1);
+                expect(messages.length).toBe(initLength-1);
             });
             done();
         });
